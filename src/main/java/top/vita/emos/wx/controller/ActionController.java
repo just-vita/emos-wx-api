@@ -35,6 +35,6 @@ public class ActionController{
     @ApiOperation("测试接口")
     @PostMapping("/test2")
     public R test(@RequestBody @Valid Action action) {
-        return R.ok("success");
+        return R.ok(action.getActionName());
     }
 }
