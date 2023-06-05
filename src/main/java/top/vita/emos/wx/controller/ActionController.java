@@ -4,10 +4,13 @@ package top.vita.emos.wx.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import top.vita.emos.wx.entity.Action;
 import top.vita.emos.wx.service.ActionService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.vita.emos.wx.util.R;
+
+import javax.validation.Valid;
 
 /**
  * 行为表(Action)表控制层
@@ -26,6 +29,12 @@ public class ActionController{
     @ApiOperation("测试接口")
     @GetMapping("/test")
     public R test() {
+        return R.ok("success");
+    }
+
+    @ApiOperation("测试接口")
+    @PostMapping("/test2")
+    public R test(@RequestBody @Valid Action action) {
         return R.ok("success");
     }
 }

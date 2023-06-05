@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 行为表(Action)表实体类
  *
@@ -24,6 +27,7 @@ public class Action  {
     //行为编号
     private String actionCode;
     //行为名称
+    @NotNull
     private String actionName;
 
 }
