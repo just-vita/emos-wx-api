@@ -78,5 +78,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Set<String> searchUserPermissions(int id) {
         return userMapper.searchUserPermissions(id);
     }
+
+    @Override
+    public Integer login(String code) {
+        String openId = getOpenId(code);
+        Integer userId = userMapper.searchIdByOpenId(openId);
+        if (userId == null) {
+            throw new EmosException("账户不存在");
+        }
+        // TODO MQ发送消息
+        return userId;
+    }
 }
 

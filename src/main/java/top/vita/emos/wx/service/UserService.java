@@ -16,5 +16,7 @@ public interface UserService extends IService<User> {
     int registerUser(String registerCode, String code, String nickname, String photo);
 
     Set<String> searchUserPermissions(int id);
+
+    Integer login(String code);
 }
 

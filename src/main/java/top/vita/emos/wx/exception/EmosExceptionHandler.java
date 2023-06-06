@@ -37,6 +37,11 @@ public class EmosExceptionHandler {
         return R.error("你不具备相关权限");
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public R returnRuntimeException(RuntimeException e) {
+        return R.error(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public R returnException(Exception e) {
         return R.error("后端执行异常");
