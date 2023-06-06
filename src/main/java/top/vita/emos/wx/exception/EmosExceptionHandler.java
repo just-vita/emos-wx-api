@@ -1,5 +1,6 @@
 package top.vita.emos.wx.exception;
 
+import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -30,6 +31,15 @@ public class EmosExceptionHandler {
         BindingResult result = e.getBindingResult();
         Map<String, String> map = getErrors(result);
         return R.error(map);
+    }
+    @ExceptionHandler(UnauthorizedException.class)
+    public R returnUnauthorizedException(UnauthorizedException e) {
+        return R.error("你不具备相关权限");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public R returnException(Exception e) {
+        return R.error("后端执行异常");
     }
 
     public Map<String, String> getErrors(BindingResult result) {
