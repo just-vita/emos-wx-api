@@ -57,7 +57,7 @@ mybatis:
 logging:
   level:
     root: info
-    com.example.emos.wx.db.dao : warn
+    top.vita.emos.wx.mapper : warn
   pattern:
     console: "%d{HH:mm:ss}  %-5level  %msg%n"
 emos:

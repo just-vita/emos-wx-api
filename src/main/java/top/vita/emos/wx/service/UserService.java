@@ -3,6 +3,8 @@ package top.vita.emos.wx.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.vita.emos.wx.entity.User;
 
+import java.util.Set;
+
 /**
  * 用户表(User)表服务接口
  *
@@ -11,5 +13,8 @@ import top.vita.emos.wx.entity.User;
  */
 public interface UserService extends IService<User> {
 
+    int registerUser(String registerCode, String code, String nickname, String photo);
+
+    Set<String> searchUserPermissions(int id);
 }
 
