@@ -2,6 +2,7 @@ package top.vita.emos.wx.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import top.vita.emos.wx.entity.Holidays;
 
 /**
@@ -12,6 +13,7 @@ import top.vita.emos.wx.entity.Holidays;
  */
 @Mapper
 public interface HolidaysMapper extends BaseMapper<Holidays> {
-
+    @Select("select id from tb_holidays where date = current_date limit 1;")
+    Integer searchTodayIsHoliday();
 }
 

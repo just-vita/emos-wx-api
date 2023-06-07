@@ -2,6 +2,7 @@ package top.vita.emos.wx.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import top.vita.emos.wx.entity.Workday;
 
 /**
@@ -12,6 +13,7 @@ import top.vita.emos.wx.entity.Workday;
  */
 @Mapper
 public interface WorkdayMapper extends BaseMapper<Workday> {
-
+    @Select("select id from tb_workday where date = current_date limit 1;")
+    Integer searchTodayIsWorkday();
 }
 

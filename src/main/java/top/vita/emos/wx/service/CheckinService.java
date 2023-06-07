@@ -10,6 +10,7 @@ import top.vita.emos.wx.entity.Checkin;
  * @since 2023-06-05 13:27:58
  */
 public interface CheckinService extends IService<Checkin> {
+    String validCanCheckin(int userId, String date);
 
 }
 
