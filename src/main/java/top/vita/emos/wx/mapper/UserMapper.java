@@ -67,5 +67,10 @@ public interface UserMapper extends BaseMapper<User> {
             " join tb_permission p on JSON_CONTAINS(r.permissions, CAST(p.id AS CHAR)) " +
             "where u.id = #{userId} and u.status = 1")
     Set<String> searchUserPermissions(int id);
+
+    @Select("SELECT " +
+            " id, open_id, nickname, photo, name, sex, tel, role, root, dept_id, status, create_time " +
+            "FROM tb_user WHERE id=#{userId} AND status=1 ")
+    User searchById(int userId);
 }
 

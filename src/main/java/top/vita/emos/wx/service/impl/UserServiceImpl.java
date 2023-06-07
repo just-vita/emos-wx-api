@@ -89,5 +89,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // TODO MQ发送消息
         return userId;
     }
+
+    @Override
+    public User searchById(int userId) {
+        return userMapper.searchById(userId);
+    }
 }
 

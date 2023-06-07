@@ -52,11 +52,10 @@ public class OAuth2Realm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         String accessToken = (String) token.getPrincipal();
         int userId = jwtUtils.getUserId(accessToken);
-        User user = userService.getById(userId);
+        User user = userService.searchById(userId);
         if (user == null) {
             throw new LockedAccountException("账号已被锁定，请联系管理员");
         }
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user,accessToken,getName());
-        return info;
+        return new SimpleAuthenticationInfo(user,accessToken,getName());
     }
 }
