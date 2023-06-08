@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import top.vita.emos.wx.util.R;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,7 @@ public class UserController{
     @Autowired
     private UserService userService;
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtils jwtUtil;
     @Autowired
     private RedisTemplate redisTemplate;
     @Value("${emos.jwt.cache-expire}")
@@ -42,7 +43,7 @@ public class UserController{
     @PostMapping("/register")
     public R register(@RequestBody @Valid RegisterForm form) {
         int id = userService.registerUser(form.getRegisterCode(), form.getCode(), form.getNickname(), form.getPhoto());
-        String token = jwtUtils.createToken(id);
+        String token = jwtUtil.createToken(id);
         Set<String> permissionSet = userService.searchUserPermissions(id);
         saveCacheToken(token, id);
         return R.ok("用户注册成功").put("token", token).put("permission", permissionSet);
@@ -51,10 +52,18 @@ public class UserController{
     @PostMapping("/login")
     public R login(@RequestBody @Valid LoginForm form) {
         int id = userService.login(form.getCode());
-        String token = jwtUtils.createToken(id);
+        String token = jwtUtil.createToken(id);
         Set<String> permissionSet = userService.searchUserPermissions(id);
         saveCacheToken(token, id);
         return R.ok("登录成功").put("token", token).put("permission", permissionSet);
+    }
+
+    @ApiOperation("查询用户摘要信息")
+    @GetMapping("/searchUserSummary")
+    public R searchUserSummary(@RequestHeader("token") String token) {
+        int userId = jwtUtil.getUserId(token);
+        HashMap map = userService.searchUserSummary(userId);
+        return R.ok().put("result", map);
     }
 
     private void saveCacheToken(String token, int userId) {
