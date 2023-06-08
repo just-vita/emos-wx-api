@@ -21,7 +21,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("tb_checkin")
 public class Checkin  {
     //主键@TableId
-    private Integer id;
+    private String id;
     //用户ID
     private Integer userId;
     //签到地址

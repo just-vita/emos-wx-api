@@ -44,6 +44,7 @@ public class EmosExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public R returnException(Exception e) {
+        e.printStackTrace();
         return R.error("后端执行异常");
     }
 
