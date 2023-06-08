@@ -72,5 +72,11 @@ public interface UserMapper extends BaseMapper<User> {
             " id, open_id, nickname, photo, name, sex, tel, role, root, dept_id, status, create_time " +
             "FROM tb_user WHERE id=#{userId} AND status=1 ")
     User searchById(int userId);
+
+    @Select("SELECT hiredate FROM tb_user " +
+            "WHERE id=#{userId} AND status=1 ")
+    String searchUserHiredate(int userId);
+
+    HashMap searchUserSummary(int userId);
 }
 

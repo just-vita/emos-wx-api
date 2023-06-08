@@ -3,6 +3,7 @@ package top.vita.emos.wx.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.vita.emos.wx.entity.User;
 
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -21,5 +22,8 @@ public interface UserService extends IService<User> {
 
     User searchById(int userId);
 
+    String searchUserHiredate(int userId);
+
+    HashMap searchUserSummary(int userId);
 }
 

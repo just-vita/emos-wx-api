@@ -94,5 +94,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User searchById(int userId) {
         return userMapper.searchById(userId);
     }
+
+    @Override
+    public String searchUserHiredate(int userId) {
+        return userMapper.searchUserHiredate(userId);
+    }
+
+    @Override
+    public HashMap searchUserSummary(int userId) {
+        return userMapper.searchUserSummary(userId);
+    }
 }
 
