@@ -184,6 +184,11 @@ public class CheckinServiceImpl extends ServiceImpl<CheckinMapper, Checkin> impl
         return list;
     }
 
+    @Override
+    public ArrayList<HashMap> searchMonthCheckin(HashMap param) {
+        return searchWeekCheckin(param);
+    }
+
 
 }
 

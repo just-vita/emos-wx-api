@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import top.vita.emos.wx.config.SystemConstants;
 import top.vita.emos.wx.config.shiro.JwtUtils;
 import top.vita.emos.wx.controller.form.CheckinForm;
+import top.vita.emos.wx.controller.form.SearchMonthCheckinForm;
+import top.vita.emos.wx.exception.EmosException;
 import top.vita.emos.wx.service.CheckinService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,5 +95,41 @@ public class CheckinController {
         ArrayList<HashMap> list = checkinService.searchWeekCheckin(param);
         map.put("weekCheckin", list);
         return R.ok().put("result", map);
+    }
+
+    @ApiOperation("查询用户某月签到数据")
+    @PostMapping("/searchMonthCheckin")
+    public R searchMonthCheckin(@Valid @RequestBody SearchMonthCheckinForm form, @RequestHeader("token") String token) {
+        int userId = jwtUtil.getUserId(token);
+        DateTime hiredate = DateUtil.parse(userService.searchUserHiredate(userId));
+        String month = form.getMonth() < 10 ? "0" + form.getMonth() : form.getMonth().toString();
+        DateTime startDate = DateUtil.parse(form.getYear() + "-" + month + "-01");
+        if (startDate.isBefore(DateUtil.beginOfMonth(hiredate))) {
+            throw new EmosException("只能查询到第一次考勤之后日期的数据");
+        }
+        if (startDate.isBefore(hiredate)) {
+            startDate = hiredate;
+        }
+        DateTime endDate = DateUtil.endOfMonth(startDate);
+        HashMap param = new HashMap();
+        param.put("userId", userId);
+        param.put("startDate", startDate.toString());
+        param.put("endDate", endDate.toString());
+        ArrayList<HashMap> list = checkinService.searchMonthCheckin(param);
+        int sum_1 = 0, sum_2 = 0, sum_3 = 0;
+        for (HashMap<String, String> one : list) {
+            String type = one.get("type");
+            String status = one.get("status");
+            if ("工作日".equals(type)) {
+                if ("正常".equals(status)) {
+                    sum_1++;
+                } else if ("迟到".equals(status)) {
+                    sum_2++;
+                } else if ("缺勤".equals(status)) {
+                    sum_3++;
+                }
+            }
+        }
+        return R.ok().put("list", list).put("sum_1", sum_1).put("sum_2", sum_2).put("sum_3", sum_3);
     }
 }

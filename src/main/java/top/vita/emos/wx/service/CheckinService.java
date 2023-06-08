@@ -23,5 +23,7 @@ public interface CheckinService extends IService<Checkin> {
 
     ArrayList<HashMap> searchWeekCheckin(HashMap param);
 
+    ArrayList<HashMap> searchMonthCheckin(HashMap param);
+
 }
 
