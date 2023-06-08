@@ -3,6 +3,8 @@ package top.vita.emos.wx.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.vita.emos.wx.entity.Checkin;
 
+import java.util.HashMap;
+
 /**
  * 签到表(Checkin)表服务接口
  *
@@ -12,5 +14,6 @@ import top.vita.emos.wx.entity.Checkin;
 public interface CheckinService extends IService<Checkin> {
     String validCanCheckin(int userId, String date);
 
+    void checkin(HashMap param);
 }
 

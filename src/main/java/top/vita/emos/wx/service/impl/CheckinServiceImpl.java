@@ -3,17 +3,26 @@ package top.vita.emos.wx.service.impl;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jsoup.Jsoup;
+import org.jsoup.internal.StringUtil;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import top.vita.emos.wx.config.SystemConstants;
 import top.vita.emos.wx.entity.Checkin;
+import top.vita.emos.wx.entity.City;
+import top.vita.emos.wx.exception.EmosException;
 import top.vita.emos.wx.mapper.CheckinMapper;
 import top.vita.emos.wx.mapper.CityMapper;
 import top.vita.emos.wx.mapper.HolidaysMapper;
 import top.vita.emos.wx.mapper.WorkdayMapper;
 import top.vita.emos.wx.service.CheckinService;
+import top.vita.emos.wx.service.CityService;
 
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -39,6 +48,9 @@ public class CheckinServiceImpl extends ServiceImpl<CheckinMapper, Checkin> impl
 
     @Autowired
     private CityMapper cityMapper;
+
+    @Autowired
+    private CityService cityService;
 
     @Override
     public String validCanCheckin(int userId, String date) {
@@ -78,5 +90,72 @@ public class CheckinServiceImpl extends ServiceImpl<CheckinMapper, Checkin> impl
             }
         }
     }
+
+    @Override
+    public void checkin(HashMap param) {
+        DateTime d1 = DateUtil.date();
+        Date d2 = DateUtil.parse(DateUtil.today() + " " + systemConstants.attendanceTime);
+        Date d3 = DateUtil.parse(DateUtil.today() + " " + systemConstants.attendanceEndTime);
+        // 1: 正常 2: 迟到
+        int status = 1;
+        if (d1.compareTo(d2) <= 0) {
+            status = 1;
+        } else if (d1.compareTo(d2) > 0 && d1.compareTo(d3) < 0) {
+            status = 2;
+        } else {
+            throw new EmosException("超出考勤时间段，无法考勤");
+        }
+        // TODO 人脸识别
+        // 查询疫情风险等级
+        // 1: 低风险 2: 中风险 3: 高风险
+        int risk = 1;
+        String city = (String) param.get("city");
+        int userId = (Integer) param.get("userId");
+        String district = (String) param.get("district");
+        if (!StringUtil.isBlank(city) && !StringUtil.isBlank(district)) {
+            String code = cityService
+                    .lambdaQuery()
+                    .eq(City::getCity, city)
+                    .select(City::getCode)
+                    .one()
+                    .getCode();
+            try {
+                String url = "http://m." + code + ".bendibao.com/news/yqdengji/?qu=" + district;
+                Document document = Jsoup.connect(url).get();
+                Elements elements = document.select("list-content");
+                if (elements.size() > 0) {
+                    Element element = elements.get(0);
+                    String result = element.select("p:last-child").text();
+                    if ("高风险".equals(result)) {
+                        risk = 3;
+                        // TODO 发送告警邮件
+                    } else if ("中风险".equals(result)) {
+                        risk = 2;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("执行异常", e);
+                throw new EmosException("获取风险等级失败");
+            }
+        }
+        //保存签到记录
+        String address = (String) param.get("address");
+        String country = (String) param.get("country");
+        String province = (String) param.get("province");
+        Checkin entity = new Checkin();
+        entity.setUserId(userId);
+        entity.setAddress(address);
+        entity.setCountry(country);
+        entity.setProvince(province);
+        entity.setCity(city);
+        entity.setDistrict(district);
+        entity.setStatus((byte) status);
+        entity.setRisk(risk);
+        entity.setDate(DateUtil.today());
+        entity.setCreateTime(d1);
+        checkinMapper.insertCheckin(entity);
+    }
+
+
 }
 

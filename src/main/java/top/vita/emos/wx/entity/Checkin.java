@@ -39,7 +39,7 @@ public class Checkin  {
     //风险等级
     private Object risk;
     //签到日期
-    private Date date;
+    private String date;
     //签到时间
     private Date createTime;
 
