@@ -1,5 +1,6 @@
 package top.vita.emos.wx.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -7,10 +8,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import top.vita.emos.wx.entity.MessageEntity;
 import top.vita.emos.wx.entity.User;
 import top.vita.emos.wx.exception.EmosException;
 import top.vita.emos.wx.mapper.UserMapper;
 import top.vita.emos.wx.service.UserService;
+import top.vita.emos.wx.task.MessageTask;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -34,8 +37,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
-    private String getOpenId(String code){
-        String url="https://api.weixin.qq.com/sns/jscode2session";
+    @Autowired
+    private MessageTask messageTask;
+
+    private String getOpenId(String code) {
+        String url = "https://api.weixin.qq.com/sns/jscode2session";
         HashMap param = new HashMap();
         param.put("appid", appId);
         param.put("secret", appSecret);
@@ -45,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         JSONObject json = JSONUtil.parseObj(response);
         String openid = json.getStr("openid");
         System.out.println(response);
-        if (openid == null || openid.length() == 0){
+        if (openid == null || openid.length() == 0) {
             throw new RuntimeException("临时登陆凭证错误");
         }
         return openid;
@@ -66,7 +72,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 param.put("createTime", new Date());
                 param.put("root", true);
                 userMapper.registerUser(param);
-                return userMapper.searchIdByOpenId(openId);
+                final Integer id = userMapper.searchIdByOpenId(openId);
+
+                // 异步发送消息
+                MessageEntity entity = new MessageEntity();
+                entity.setSenderId(0);
+                entity.setSenderName("系统消息");
+                entity.setUuid(IdUtil.simpleUUID());
+                entity.setMsg("欢迎您注册成为超级管理员，请及时更新你的员工个人信息。");
+                entity.setSendTime(new Date());
+                messageTask.sendAsync(id + "", entity);
+
+                return id;
             } else {
                 throw new EmosException("无法绑定超级管理员账号");
             }
