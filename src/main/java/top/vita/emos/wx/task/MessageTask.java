@@ -40,7 +40,7 @@ public class MessageTask {
                             .headers(map)
                             .build();
             channel.basicPublish("", topic, properties, entity.getMsg().getBytes());
-            log.debug("消息发送成功");
+            log.info("消息发送成功");
         } catch (Exception e) {
             log.error("发生异常：", e);
             throw new EmosException("向MQ发送消息失败");
@@ -65,7 +65,7 @@ public class MessageTask {
                     final String messageId = headers.get("messageId").toString();
                     final byte[] body = response.getBody();
                     final String message = new String(body);
-                    log.debug("从RabbitMQ接收的消息：" + message);
+                    log.info("从RabbitMQ接收的消息：" + message);
 
                     final MessageRefEntity ref = new MessageRefEntity();
                     ref.setMessageId(messageId);
@@ -99,7 +99,7 @@ public class MessageTask {
              Channel channel = connection.createChannel();
         ) {
             channel.queueDelete(topic);
-            log.debug("消息队列成功删除");
+            log.info("消息队列成功删除");
         }catch (Exception e) {
             log.error("删除队列失败", e);
             throw new EmosException("删除队列失败");
