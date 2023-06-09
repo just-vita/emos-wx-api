@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.vita.emos.wx.config.shiro.JwtUtils;
+import top.vita.emos.wx.controller.form.DeleteMessageRefByIdForm;
 import top.vita.emos.wx.controller.form.SearchMessageByIdForm;
 import top.vita.emos.wx.controller.form.SearchMessageByPageForm;
 import top.vita.emos.wx.controller.form.UpdateUnreadMessageForm;
@@ -51,6 +52,13 @@ public class MessageController {
     @PostMapping("/updateUnreadMessage")
     public R updateUnreadMessage(@Valid @RequestBody UpdateUnreadMessageForm form) {
         long rows = messageService.updateUnreadMessage(form.getId());
+        return R.ok().put("result", rows == 1);
+    }
+
+    @ApiOperation("删除消息")
+    @PostMapping("/deleteMessageRefById")
+    public R deleteMessageRefById(@Valid @RequestBody DeleteMessageRefByIdForm form) {
+        long rows = messageService.deleteMessageRefById(form.getId());
         return R.ok().put("result", rows == 1);
     }
 
