@@ -3,6 +3,7 @@ package top.vita.emos.wx.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.vita.emos.wx.entity.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -25,5 +26,7 @@ public interface UserService extends IService<User> {
     String searchUserHiredate(int userId);
 
     HashMap searchUserSummary(int userId);
+
+    ArrayList<HashMap> searchUserGroupByDept(String keyword);
 }
 

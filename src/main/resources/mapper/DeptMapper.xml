@@ -2,5 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.vita.emos.wx.mapper.DeptMapper">
 
+    <select id="searchMembers" parameterType="list" resultType="HashMap">
+        SELECT id,name,photo
+        FROM tb_user
+        WHERE status = 1
+        AND id IN
+        <foreach collection="list" item="one" separator="," open="(" close=")">
+            #{one}
+        </foreach>
+    </select>
+
 </mapper>
 

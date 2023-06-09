@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import top.vita.emos.wx.entity.MessageEntity;
 import top.vita.emos.wx.entity.User;
 import top.vita.emos.wx.exception.EmosException;
+import top.vita.emos.wx.mapper.DeptMapper;
 import top.vita.emos.wx.mapper.UserMapper;
 import top.vita.emos.wx.service.UserService;
 import top.vita.emos.wx.task.MessageTask;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -39,6 +41,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private MessageTask messageTask;
+
+    @Autowired
+    private DeptMapper deptMapper;
 
     private String getOpenId(String code) {
         String url = "https://api.weixin.qq.com/sns/jscode2session";
@@ -120,6 +125,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public HashMap searchUserSummary(int userId) {
         return userMapper.searchUserSummary(userId);
+    }
+
+    @Override
+    public ArrayList<HashMap> searchUserGroupByDept(String keyword) {
+        ArrayList<HashMap> list_1 = deptMapper.searchDeptMembers(keyword);
+        ArrayList<HashMap> list_2 = userMapper.searchUserGroupByDept(keyword);
+        for (HashMap map_1 : list_1) {
+            long deptId = (Long) map_1.get("id");
+            ArrayList members = new ArrayList();
+            for (HashMap map_2 : list_2) {
+                long id = (Long) map_2.get("deptId");
+                if (deptId == id) {
+                    members.add(map_2);
+                }
+            }
+            map_1.put("members", members);
+        }
+        return list_1;
     }
 }
 

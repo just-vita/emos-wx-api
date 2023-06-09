@@ -74,5 +74,17 @@
     <select id="searchMemberEmail" parameterType="int" resultType="String">
         SELECT email FROM tb_user WHERE id=#{id} AND status = 1
     </select>
+
+    <select id="searchDeptMembers" parameterType="String" resultType="HashMap">
+        SELECT
+        d.id,
+        d.dept_name AS deptName,
+        COUNT(u.id) AS count
+        FROM tb_dept d LEFT JOIN tb_user u ON u.dept_id=d.id AND u.status=1
+        <if test="keyword!=null">
+            WHERE u.name LIKE '%${keyword}%'
+        </if>
+        GROUP BY d.id
+    </select>
 </mapper>
 
