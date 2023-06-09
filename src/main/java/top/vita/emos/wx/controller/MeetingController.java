@@ -11,6 +11,7 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import top.vita.emos.wx.config.shiro.JwtUtils;
 import top.vita.emos.wx.controller.form.InsertMeetingForm;
+import top.vita.emos.wx.controller.form.SearchMeetingByIdFrom;
 import top.vita.emos.wx.controller.form.SearchMyMeetingListByPageForm;
 import top.vita.emos.wx.controller.form.UpdateMeetingInfoForm;
 import top.vita.emos.wx.entity.Meeting;
@@ -85,6 +86,14 @@ public class MeetingController {
         entity.setStatus((short) 1);
         meetingService.insertMeeting(entity);
         return R.ok().put("result", "success");
+    }
+
+    @ApiOperation("根据ID查询会议")
+    @RequiresPermissions(value = {"ROOT", "MEETING:SELECT"}, logical = Logical.OR)
+    @PostMapping("/searchMeetingById")
+    public R searchMeetingById(@Valid @RequestBody SearchMeetingByIdFrom form) {
+        HashMap map = meetingService.searchMeetingById(form.getId());
+        return R.ok().put("result", map);
     }
 
     @ApiOperation("更新会议")

@@ -75,7 +75,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public HashMap searchMeetingById(int id) {
-        return null;
+        HashMap map = meetingMapper.searchMeetingById(id);
+        ArrayList<HashMap> list = meetingMapper.searchMeetingMembers(id);
+        map.put("members", list);
+        return map;
     }
 
     @Override
