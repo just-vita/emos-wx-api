@@ -1,6 +1,7 @@
 package top.vita.emos.wx.controller;
 
 
+import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
@@ -10,7 +11,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import top.vita.emos.wx.config.shiro.JwtUtils;
 import top.vita.emos.wx.controller.form.LoginForm;
 import top.vita.emos.wx.controller.form.RegisterForm;
+import top.vita.emos.wx.controller.form.SearchMembersForm;
 import top.vita.emos.wx.controller.form.SearchUserGroupByDeptForm;
+import top.vita.emos.wx.exception.EmosException;
 import top.vita.emos.wx.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import top.vita.emos.wx.util.R;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +81,19 @@ public class UserController {
         ArrayList<HashMap> list = userService.searchUserGroupByDept(form.getKeyword());
         return R.ok().put("result", list);
     }
+
+    @ApiOperation("查询成员")
+    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE"}, logical = Logical.OR)
+    @PostMapping("/searchMembers")
+    public R searchMembers(@Valid @RequestBody SearchMembersForm form) {
+        if (!JSONUtil.isJsonArray(form.getMembers())) {
+            throw new EmosException("members不是JSON数组");
+        }
+        List param = JSONUtil.parseArray(form.getMembers()).toList(Integer.class);
+        ArrayList list = userService.searchMembers(param);
+        return R.ok().put("result", list);
+    }
+
 
     private void saveCacheToken(String token, int userId) {
         redisTemplate.opsForValue().set(token, userId, cacheExpire, TimeUnit.DAYS);

@@ -5,6 +5,7 @@ import top.vita.emos.wx.entity.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,5 +29,7 @@ public interface UserService extends IService<User> {
     HashMap searchUserSummary(int userId);
 
     ArrayList<HashMap> searchUserGroupByDept(String keyword);
+
+    ArrayList searchMembers(List param);
 }
 

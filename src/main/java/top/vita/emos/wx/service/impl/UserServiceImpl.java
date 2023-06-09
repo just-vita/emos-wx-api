@@ -16,10 +16,7 @@ import top.vita.emos.wx.mapper.UserMapper;
 import top.vita.emos.wx.service.UserService;
 import top.vita.emos.wx.task.MessageTask;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 用户表(User)表服务实现类
@@ -144,5 +141,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return list_1;
     }
+
+    @Override
+    public ArrayList<HashMap> searchMembers(List param) {
+        return userMapper.searchMembers(param);
+    }
+
 }
 
