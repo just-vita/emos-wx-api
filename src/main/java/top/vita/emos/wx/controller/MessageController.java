@@ -10,6 +10,7 @@ import top.vita.emos.wx.controller.form.SearchMessageByIdForm;
 import top.vita.emos.wx.controller.form.SearchMessageByPageForm;
 import top.vita.emos.wx.controller.form.UpdateUnreadMessageForm;
 import top.vita.emos.wx.service.MessageService;
+import top.vita.emos.wx.task.MessageTask;
 import top.vita.emos.wx.util.R;
 
 import javax.validation.Valid;
@@ -27,8 +28,8 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-//    @Autowired
-//    private MessageTask messageTask;
+    @Autowired
+    private MessageTask messageTask;
 
     @ApiOperation("获取分页消息列表")
     @PostMapping("/searchMessageByPage")
@@ -60,6 +61,17 @@ public class MessageController {
     public R deleteMessageRefById(@Valid @RequestBody DeleteMessageRefByIdForm form) {
         long rows = messageService.deleteMessageRefById(form.getId());
         return R.ok().put("result", rows == 1);
+    }
+
+    @GetMapping("/refreshMessage")
+    @ApiOperation("刷新用户消息")
+    public R refreshMessage(@RequestHeader("token") String token) {
+        int userId = jwtUtil.getUserId(token);
+        messageTask.receiveAsync(userId + "");
+        // 不用担心查到的值不是准确的值，在下一次轮询后就能查到了
+        long lastRows = messageService.searchLastCount(userId);
+        long unreadRows = messageService.searchUnreadCount(userId);
+        return R.ok().put("lastRows", lastRows).put("unreadRows", unreadRows);
     }
 
 

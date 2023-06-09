@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("tb_user")
-public class User  {
+public class User implements Serializable {
     //主键@TableId
     private Integer id;
     //长期授权字符串
