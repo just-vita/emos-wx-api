@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     @Bean
-    public ConnectionFactory getFactory(){
-        ConnectionFactory factory=new ConnectionFactory();
+    public ConnectionFactory getFactory() {
+        ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         factory.setPort(5672);
         return factory;

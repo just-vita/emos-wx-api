@@ -37,9 +37,15 @@ public class MessageDao {
 
     public List<HashMap> searchMessageByPage(int userId, long start, int length) {
         JSONObject json = new JSONObject();
-        json.set("$toString", "$$_id");
+        // 将message表中的"_id"字段转换成字符串
+        // 表对应的是后续"mongoTemplate.aggregate"中传入的表
+        json.set("$toString", "$_id");
         Aggregation aggregation = Aggregation.newAggregation(
+                // 在结果中增加一个字段
+                // 将message_ref表中的_id字段转为字符串，并改名为id
                 Aggregation.addFields().addField("id").withValue(json).build(),
+                // 以"id"字段连接"message_ref"表的"messageId"字段，作为合并结果的"ref"字段
+                // 相当于where中的on语句
                 Aggregation.lookup("message_ref", "id", "messageId", "ref"),
                 Aggregation.match(Criteria.where("ref.receiverId").is(userId)),
                 Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendTime")),
@@ -49,11 +55,16 @@ public class MessageDao {
         AggregationResults<HashMap> result = mongoTemplate.aggregate(aggregation, "message", HashMap.class);
         List<HashMap> list = result.getMappedResults();
         list.forEach(message -> {
+            // 得到合并结果中的ref字段
+            // 因为聚合操作可能返回多个文档，所以返回结果是一个 List 对象
             List<MessageRefEntity> refList = (List<MessageRefEntity>) message.get("ref");
             MessageRefEntity refEntity = refList.get(0);
+            // 将ref字段的参数设置成普通字段
             message.put("readFlag", refEntity.getReadFlag());
             message.put("refId", refEntity.get_id());
+            // 删除原本的ref字段
             message.remove("ref");
+            // 删除合并后的表中残留的_id字段（message与ref存储的id相同）
             message.remove("_id");
 
             Date sendTime = (Date) message.get("sendTime");

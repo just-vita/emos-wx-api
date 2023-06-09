@@ -103,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userId == null) {
             throw new EmosException("账户不存在");
         }
-        messageTask.receiveAsync(userId + "");
+        // messageTask.receiveAsync(userId + "");
         return userId;
     }
 

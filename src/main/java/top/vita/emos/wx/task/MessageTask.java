@@ -31,7 +31,11 @@ public class MessageTask {
         String id = messageService.insertMessage(entity);
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.queueDeclare(topic, true, false, false, null);
+            channel.queueDeclare(topic,
+                    true,
+                    false,
+                    false,
+                    null);
             HashMap map = new HashMap();
             map.put("messageId", id);
             AMQP.BasicProperties properties =
@@ -57,7 +61,11 @@ public class MessageTask {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel();
         ) {
-            channel.queueDeclare(topic, true, false, false, null);
+            channel.queueDeclare(topic,
+                    true,
+                    false,
+                    false,
+                    null);
             while (true) {
                 final GetResponse response = channel.basicGet(topic, false);
                 if (response != null) {
@@ -74,13 +82,13 @@ public class MessageTask {
                     ref.setLastFlag(true);
                     messageService.insertRef(ref);
 
+                    // 确认收到消息
                     final long deliveryTag = response.getEnvelope().getDeliveryTag();
                     channel.basicAck(deliveryTag, false);
                     i++;
                 } else {
                     break;
                 }
-
             }
         } catch (Exception e) {
             log.error("执行异常", e);
@@ -90,24 +98,24 @@ public class MessageTask {
     }
 
     @Async
-    public int receiveAsync(String topic) {
-        return receive(topic);
+    public void receiveAsync(String topic) {
+        receive(topic);
     }
 
-    public void deleteQueue(String topic){
+    public void deleteQueue(String topic) {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel();
         ) {
             channel.queueDelete(topic);
             log.info("消息队列成功删除");
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("删除队列失败", e);
             throw new EmosException("删除队列失败");
         }
     }
 
     @Async
-    public void deleteQueueAsync(String topic){
+    public void deleteQueueAsync(String topic) {
         deleteQueue(topic);
     }
 }
