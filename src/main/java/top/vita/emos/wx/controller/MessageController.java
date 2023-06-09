@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import top.vita.emos.wx.config.shiro.JwtUtils;
 import top.vita.emos.wx.controller.form.SearchMessageByIdForm;
 import top.vita.emos.wx.controller.form.SearchMessageByPageForm;
+import top.vita.emos.wx.controller.form.UpdateUnreadMessageForm;
 import top.vita.emos.wx.service.MessageService;
 import top.vita.emos.wx.util.R;
 
@@ -45,4 +46,13 @@ public class MessageController {
         HashMap map = messageService.searchMessageById(form.getId());
         return R.ok().put("result", map);
     }
+
+    @ApiOperation("未读消息更新成已读消息")
+    @PostMapping("/updateUnreadMessage")
+    public R updateUnreadMessage(@Valid @RequestBody UpdateUnreadMessageForm form) {
+        long rows = messageService.updateUnreadMessage(form.getId());
+        return R.ok().put("result", rows == 1);
+    }
+
+
 }
