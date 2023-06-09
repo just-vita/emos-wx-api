@@ -84,5 +84,11 @@ public interface UserMapper extends BaseMapper<User> {
     ArrayList<HashMap> searchUserGroupByDept(String keyword);
 
     ArrayList<HashMap> searchMembers(List param);
+
+    HashMap searchUserInfo(int userId);
+
+    int searchDeptManagerId(int id);
+
+    int searchGmId();
 }
 

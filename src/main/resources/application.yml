@@ -66,6 +66,10 @@ emos:
     expire: 5
     cache-expire: 10
   image-folder: D:/emos/image
+  recieveNotify: http://localhost:8080/emos-wx-api/meeting/recieveNotify
+workflow:
+  url: http://localhost:9090/emos-workflow
+
 wx:
   app-id: wxe83ce7120766ea5b
   app-secret: 1951612d1e3f0dbc10df4e855c664752
