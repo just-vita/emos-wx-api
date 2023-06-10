@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import top.vita.emos.wx.config.shiro.JwtUtils;
-import top.vita.emos.wx.controller.form.InsertMeetingForm;
-import top.vita.emos.wx.controller.form.SearchMeetingByIdFrom;
-import top.vita.emos.wx.controller.form.SearchMyMeetingListByPageForm;
-import top.vita.emos.wx.controller.form.UpdateMeetingInfoForm;
+import top.vita.emos.wx.controller.form.*;
 import top.vita.emos.wx.entity.Meeting;
 import top.vita.emos.wx.exception.EmosException;
 import top.vita.emos.wx.service.MeetingService;
@@ -58,7 +55,7 @@ public class MeetingController {
     }
 
     @ApiOperation("添加会议")
-    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
     @PostMapping("/insertMeeting")
     public R insertMeeting(@Valid @RequestBody InsertMeetingForm form, @RequestHeader("token") String token) {
         if (form.getType() == 2 && (form.getPlace() == null || form.getPlace().length() == 0)) {
@@ -89,7 +86,7 @@ public class MeetingController {
     }
 
     @ApiOperation("根据ID查询会议")
-    @RequiresPermissions(value = {"ROOT", "MEETING:SELECT"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "MEETING:SELECT"}, logical = Logical.OR)
     @PostMapping("/searchMeetingById")
     public R searchMeetingById(@Valid @RequestBody SearchMeetingByIdFrom form) {
         HashMap map = meetingService.searchMeetingById(form.getId());
@@ -97,7 +94,7 @@ public class MeetingController {
     }
 
     @ApiOperation("更新会议")
-    @RequiresPermissions(value = {"ROOT", "MEETING:UPDATE"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "MEETING:UPDATE"}, logical = Logical.OR)
     @PostMapping("/updateMeetingInfo")
     public R updateMeetingInfo(@Valid @RequestBody UpdateMeetingInfoForm form) {
         if (form.getType() == 2 && (form.getPlace() == null || form.getPlace().length() == 0)) {
@@ -124,6 +121,14 @@ public class MeetingController {
         param.put("instanceId", form.getInstanceId());
         param.put("status", 1);
         meetingService.updateMeetingInfo(param);
+        return R.ok().put("result", "success");
+    }
+
+    @ApiOperation("根据ID删除会议")
+//    @RequiresPermissions(value = {"ROOT", "MEETING:DELETE"}, logical = Logical.OR)
+    @PostMapping("/deleteMeetingById")
+    public R deleteMeetingById(@Valid @RequestBody DeleteMeetingByIdForm form) {
+        meetingService.deleteMeetingById(form.getId());
         return R.ok().put("result", "success");
     }
 

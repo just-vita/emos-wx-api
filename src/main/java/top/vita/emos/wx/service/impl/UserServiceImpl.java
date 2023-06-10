@@ -72,6 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 param.put("role", "[0]");
                 param.put("status", 1);
                 param.put("createTime", new Date());
+                param.put("hiredate", new Date());
                 param.put("root", true);
                 userMapper.registerUser(param);
                 final Integer id = userMapper.searchIdByOpenId(openId);

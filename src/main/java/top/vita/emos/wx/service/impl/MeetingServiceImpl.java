@@ -1,5 +1,9 @@
 package top.vita.emos.wx.service.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -83,12 +87,58 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
 
     @Override
     public void updateMeetingInfo(HashMap param) {
-
+        int id = (int) param.get("id");
+        String date = param.get("date").toString();
+        String start = param.get("start").toString();
+        String instanceId = param.get("instanceId").toString();
+        HashMap oldMeeting = meetingMapper.searchMeetingById(id);
+        String uuid = oldMeeting.get("uuid").toString();
+        Integer creatorId = Integer.parseInt(oldMeeting.get("creatorId").toString());
+        int row = meetingMapper.updateMeetingInfo(param);
+        if (row != 1) {
+            throw new EmosException("会议更新失败");
+        }
+//        JSONObject json = new JSONObject();
+//        json.set("instanceId", instanceId);
+//        json.set("reason", "会议被修改");
+//        json.set("uuid", uuid);
+////        json.set("code", code);
+//        String url = workflow + "/workflow/deleteProcessById";
+//        HttpResponse resp = HttpRequest.post(url).header("content-type", "application/json")
+//                .body(json.toString()).execute();
+//        if (resp.getStatus() != 200) {
+//            log.error("删除工作流失败");
+//            throw new EmosException("删除工作流失败");
+//        }
+        startMeetingWorkflow(uuid, creatorId, date, start);
     }
 
     @Override
     public void deleteMeetingById(int id) {
-
+        HashMap meeting = meetingMapper.searchMeetingById(id);
+        String uuid = meeting.get("uuid").toString();
+        String instanceId = meeting.get("instanceId").toString();
+        DateTime date = DateUtil.parse(meeting.get("date") + " " + meeting.get("start"));
+        DateTime now = DateUtil.date();
+        if (now.isAfterOrEquals(date.offset(DateField.MINUTE, -20))) {
+            throw new EmosException("距离会议开始不足20分钟，不能删除会议");
+        }
+        int row = meetingMapper.deleteMeetingById(id);
+        if (row != 1) {
+            throw new EmosException("会议删除失败");
+        }
+        /*JSONObject json = new JSONObject();
+        json.set("instanceId", instanceId);
+        json.set("reason", "会议被修改");
+        json.set("uuid", uuid);
+        json.set("code", code);
+        String url = workflow + "/workflow/deleteProcessById";
+        HttpResponse resp = HttpRequest.post(url).header("content-type", "application/json")
+                .body(json.toString()).execute();
+        if (resp.getStatus() != 200) {
+            log.error("删除工作流失败");
+            throw new EmosException("删除工作流失败");
+        }*/
     }
 
     @Override
@@ -119,7 +169,14 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             boolean bool = meetingMapper.searchMeetingMembersInSameDept(uuid);
             json.set("sameDept", bool);
         }
-        String url = workflow + "/workflow/startMeetingProcess";
+        HashMap param = new HashMap();
+        param.put("uuid", uuid);
+        param.put("instanceId", UUID.randomUUID().toString(true));
+        int row = meetingMapper.updateMeetingInstanceId(param);
+        if (row != 1) {
+            throw new EmosException("保存会议工作流实例ID失败");
+        }
+        /*String url = workflow + "/workflow/startMeetingProcess";
         HttpResponse resp = HttpRequest.post(url).header("Content-Type", "application/json")
                 .body(json.toString()).execute();
         if (resp.getStatus() == 200) {
@@ -130,9 +187,9 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             param.put("instanceId", instanceId);
             int row = meetingMapper.updateMeetingInstanceId(param);
             if (row != 1) {
-                throw new EmosException("保存会议工作流实例ID失败");
+                // throw new EmosException("保存会议工作流实例ID失败");
             }
-        }
+        }*/
     }
 
 }

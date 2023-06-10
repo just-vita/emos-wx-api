@@ -75,7 +75,7 @@ public class UserController {
     }
 
     @ApiOperation("查询员工列表，按照部门分组排列")
-    @RequiresPermissions(value = {"ROOT", "EMPLOYEE:SELECT"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "EMPLOYEE:SELECT"}, logical = Logical.OR)
     @PostMapping("/searchUserGroupByDept")
     public R searchUserGroupByDept(@Valid @RequestBody SearchUserGroupByDeptForm form) {
         ArrayList<HashMap> list = userService.searchUserGroupByDept(form.getKeyword());
@@ -83,7 +83,7 @@ public class UserController {
     }
 
     @ApiOperation("查询成员")
-    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE"}, logical = Logical.OR)
     @PostMapping("/searchMembers")
     public R searchMembers(@Valid @RequestBody SearchMembersForm form) {
         if (!JSONUtil.isJsonArray(form.getMembers())) {
