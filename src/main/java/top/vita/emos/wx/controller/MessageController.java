@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 
-@Api("消息模块接口")
+@Api(tags = "消息模块接口")
 @RestController
 @RequestMapping("/message")
 public class MessageController {

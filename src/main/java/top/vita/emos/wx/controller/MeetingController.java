@@ -28,7 +28,7 @@ import java.util.HashMap;
  * @author vita
  * @since 2023-06-05 13:27:57
  */
-@Api("会议模块接口")
+@Api(tags = "会议模块接口")
 @RestController
 @RequestMapping("/meeting")
 public class MeetingController {

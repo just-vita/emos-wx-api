@@ -27,7 +27,7 @@ import java.util.HashMap;
  * @author vita
  * @since 2023-06-05 13:27:58
  */
-@Api(tags = "签到模块")
+@Api(tags = "签到模块接口")
 @RestController
 @RequestMapping("/checkin")
 public class CheckinController {
